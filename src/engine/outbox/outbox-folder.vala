@@ -173,6 +173,12 @@ public class Geary.Outbox.Folder :
     }
 
     public virtual async void
+        mark_all_as_read_async(GLib.Cancellable? cancellable = null)
+        throws GLib.Error {
+        // Outbox doesn't track read/unread status
+    }
+
+    public virtual async void
         remove_email_async(Gee.Collection<Geary.EmailIdentifier> email_ids,
                            GLib.Cancellable? cancellable = null)
         throws GLib.Error {

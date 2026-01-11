@@ -8,11 +8,13 @@
 public class FolderList.FolderEntry :
     FolderList.AbstractFolderEntry,
     Sidebar.InternalDropTargetEntry,
-    Sidebar.EmphasizableEntry {
+    Sidebar.EmphasizableEntry,
+    Sidebar.Contextable {
 
 
     private Application.FolderContext context;
     private bool has_new;
+    private Gtk.Menu? context_menu = null;
 
 
     public FolderEntry(Application.FolderContext context) {
@@ -124,6 +126,37 @@ public class FolderList.FolderEntry :
 
     private void on_context_changed() {
         entry_changed();
+    }
+
+    public Gtk.Menu? get_sidebar_context_menu(Gdk.EventButton event) {
+        if (this.context_menu == null) {
+            this.context_menu = new Gtk.Menu();
+
+            var mark_read_item = new Gtk.MenuItem.with_label(_("Mark All as Read"));
+            mark_read_item.activate.connect(on_mark_all_read);
+            this.context_menu.append(mark_read_item);
+
+            this.context_menu.show_all();
+        }
+        return this.context_menu;
+    }
+
+    private void on_mark_all_read() {
+        var dominated_folder = this.folder as Geary.FolderSupport.Mark;
+        if (dominated_folder == null) {
+            return;
+        }
+
+        var app = GLib.Application.get_default() as Application.Client;
+        if (app != null && app.controller != null) {
+            app.controller.mark_folder_read.begin(this.folder, (obj, res) => {
+                try {
+                    app.controller.mark_folder_read.end(res);
+                } catch (GLib.Error err) {
+                    warning("Failed to mark folder as read: %s", err.message);
+                }
+            });
+        }
     }
 
 }

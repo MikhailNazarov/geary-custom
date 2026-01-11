@@ -213,6 +213,7 @@ engine_vala_sources = files(
   'imap-engine/replay-ops/imap-engine-list-email-by-id.vala',
   'imap-engine/replay-ops/imap-engine-list-email-by-sparse-id.vala',
   'imap-engine/replay-ops/imap-engine-mark-email.vala',
+  'imap-engine/replay-ops/imap-engine-mark-all-as-read.vala',
   'imap-engine/replay-ops/imap-engine-move-email-commit.vala',
   'imap-engine/replay-ops/imap-engine-move-email-prepare.vala',
   'imap-engine/replay-ops/imap-engine-move-email-revoke.vala',

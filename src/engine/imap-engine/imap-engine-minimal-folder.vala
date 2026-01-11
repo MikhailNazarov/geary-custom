@@ -1385,6 +1385,20 @@ private class Geary.ImapEngine.MinimalFolder : Geary.Folder, Geary.FolderSupport
     }
 
     public virtual async void
+        mark_all_as_read_async(GLib.Cancellable? cancellable = null)
+        throws GLib.Error {
+        check_open("mark_all_as_read_async");
+
+        MarkAllAsRead mark_all = new MarkAllAsRead(this, cancellable);
+        replay_queue.schedule(mark_all);
+
+        yield mark_all.wait_for_ready_async(cancellable);
+
+        // Cancel any remote update
+        this.account.cancel_remote_update();
+    }
+
+    public virtual async void
         copy_email_async(Gee.Collection<Geary.EmailIdentifier> to_copy,
                          Geary.FolderPath destination,
                          GLib.Cancellable? cancellable = null)
