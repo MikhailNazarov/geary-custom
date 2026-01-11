@@ -1124,6 +1124,39 @@ private class Geary.ImapDB.Folder : BaseObject, Geary.ReferenceSemantics {
         return unread_change;
     }
 
+    /**
+     * Marks all messages in folder as read in local database.
+     */
+    public async void mark_all_as_read_async(Cancellable? cancellable) throws Error {
+        int unread_count = properties.email_unread;
+        if (unread_count == 0) {
+            return;
+        }
+
+        yield db.exec_transaction_async(Db.TransactionType.RW, (cx, cancellable) => {
+            // Update all unread emails in this folder to read
+            // flags column is in MessageTable, need to join with MessageLocationTable
+            Db.Statement stmt = cx.prepare("""
+                UPDATE MessageTable
+                SET flags = REPLACE(flags, 'unread', '')
+                WHERE id IN (
+                    SELECT message_id FROM MessageLocationTable
+                    WHERE folder_id = ?
+                ) AND flags LIKE '%unread%'
+            """);
+            stmt.bind_rowid(0, folder_id);
+            stmt.exec(cancellable);
+
+            // Reset unread count to 0
+            do_add_to_unread_count(cx, -unread_count, cancellable);
+
+            return Db.TransactionOutcome.COMMIT;
+        }, cancellable);
+
+        // Update properties
+        properties.set_status_unseen(0);
+    }
+
     internal async Gee.List<Imap.UID>? get_email_uids_async(
         Gee.Collection<EmailIdentifier> ids, Cancellable? cancellable) throws Error {
         Gee.List<Imap.UID> uids = null;

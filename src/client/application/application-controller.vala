@@ -614,6 +614,43 @@ internal class Application.Controller :
         }
     }
 
+    /**
+     * Marks all messages in a folder as read.
+     */
+    public async void mark_folder_read(Geary.Folder folder) throws GLib.Error {
+        var mark_folder = folder as Geary.FolderSupport.Mark;
+        if (mark_folder == null) {
+            return;
+        }
+
+        // Ensure folder is open
+        bool was_opened = folder.get_open_state() == Geary.Folder.OpenState.REMOTE;
+        if (!was_opened) {
+            yield folder.open_async(Geary.Folder.OpenFlags.NO_DELAY, null);
+        }
+
+        GLib.Error? caught_error = null;
+        try {
+            // Use optimized single-command mark all as read
+            yield mark_folder.mark_all_as_read_async(null);
+        } catch (GLib.Error err) {
+            caught_error = err;
+        }
+
+        // Close folder if we opened it
+        if (!was_opened) {
+            try {
+                yield folder.close_async(null);
+            } catch (GLib.Error err) {
+                // Ignore close errors
+            }
+        }
+
+        if (caught_error != null) {
+            throw caught_error;
+        }
+    }
+
     public async void move_conversations(Geary.FolderSupport.Move source,
                                          Geary.Folder destination,
                                          Gee.Collection<Geary.App.Conversation> conversations)
@@ -1352,7 +1389,7 @@ internal class Application.Controller :
                             account_context.inbox = folder;
 #if HAVE_APPINDICATOR
                             folder.properties.notify["email-unread"].connect(on_inbox_unread_changed);
-                            update_total_unread_count();
+                            folder.opened.connect(on_inbox_opened);
 #endif
                         }
                         folder.open_async.begin(
@@ -1380,6 +1417,7 @@ internal class Application.Controller :
                 if (folder.used_as == INBOX) {
 #if HAVE_APPINDICATOR
                     folder.properties.notify["email-unread"].disconnect(on_inbox_unread_changed);
+                    folder.opened.disconnect(on_inbox_opened);
 #endif
                     account_context.inbox = null;
                 }
@@ -1710,6 +1748,11 @@ internal class Application.Controller :
     }
 
 #if HAVE_APPINDICATOR
+    private void on_inbox_opened(Geary.Folder.OpenState state, int count) {
+        // Update unread count when inbox is opened and synced
+        update_total_unread_count();
+    }
+
     private void on_inbox_unread_changed() {
         update_total_unread_count();
     }

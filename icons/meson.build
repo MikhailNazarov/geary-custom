@@ -44,6 +44,12 @@ install_data(
   install_dir: join_paths(data_dir, 'icons', scalable_dir),
 )
 
+# Custom unread icon for tray
+install_data(
+  join_paths(scalable_dir, 'geary-unread.svg'),
+  install_dir: join_paths(data_dir, 'icons', scalable_dir),
+)
+
 symbolic_dir = join_paths('hicolor', 'symbolic', 'apps')
 
 install_data(

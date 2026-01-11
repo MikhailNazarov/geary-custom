@@ -24,4 +24,14 @@ public interface Geary.FolderSupport.Mark : Geary.Folder {
                          GLib.Cancellable? cancellable = null)
         throws GLib.Error;
 
+    /**
+     * Marks all messages in folder as read.
+     *
+     * This is optimized to send a single IMAP command for all messages.
+     * This folder must be opened prior to attempting this operation.
+     */
+    public abstract async void
+        mark_all_as_read_async(GLib.Cancellable? cancellable = null)
+        throws GLib.Error;
+
 }

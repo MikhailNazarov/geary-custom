@@ -24,12 +24,14 @@ public class Application.TrayIcon : GLib.Object {
     public TrayIcon(Application.Client app) {
         this.application = app;
 
-        // Create indicator
+        // Create indicator - use Geary's own icon
         this.indicator = new AppIndicator.Indicator(
             "geary-mail",
-            "mail-unread",
+            "org.gnome.Geary",
             AppIndicator.IndicatorCategory.COMMUNICATIONS
         );
+        // Use custom icon with red dot for unread
+        this.indicator.set_attention_icon("geary-unread");
 
         // Build menu
         this.menu = new Gtk.Menu();
@@ -72,12 +74,11 @@ public class Application.TrayIcon : GLib.Object {
     }
 
     private void update_icon() {
+        // Always use Geary icon, change status for attention
         if (this.unread_count > 0) {
-            this.indicator.set_icon("mail-unread");
-            this.indicator.set_label(this.unread_count.to_string(), "");
+            this.indicator.set_status(AppIndicator.IndicatorStatus.ATTENTION);
         } else {
-            this.indicator.set_icon("mail-read");
-            this.indicator.set_label("", "");
+            this.indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE);
         }
     }
 
