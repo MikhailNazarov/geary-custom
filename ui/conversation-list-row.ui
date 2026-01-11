@@ -20,6 +20,18 @@
               </object>
             </child>
             <child>
+              <object class="HdyAvatar" id="avatar">
+                <property name="visible">True</property>
+                <property name="valign">center</property>
+                <property name="show-initials">True</property>
+                <property name="size">36</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkBox" id="details">
                 <property name="visible">True</property>
                 <property name="orientation">vertical</property>
