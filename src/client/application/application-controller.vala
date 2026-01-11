@@ -1350,6 +1350,10 @@ internal class Application.Controller :
                     if (folder.used_as == INBOX) {
                         if (account_context.inbox == null) {
                             account_context.inbox = folder;
+#if HAVE_APPINDICATOR
+                            folder.properties.notify["email-unread"].connect(on_inbox_unread_changed);
+                            update_total_unread_count();
+#endif
                         }
                         folder.open_async.begin(
                             NO_DELAY, account_context.cancellable
@@ -1374,6 +1378,9 @@ internal class Application.Controller :
                 Geary.Folder folder = unavailable_iterator.get();
 
                 if (folder.used_as == INBOX) {
+#if HAVE_APPINDICATOR
+                    folder.properties.notify["email-unread"].disconnect(on_inbox_unread_changed);
+#endif
                     account_context.inbox = null;
                 }
 
@@ -1701,6 +1708,22 @@ internal class Application.Controller :
         }
         this.storage_cleanup_cancellable = null;
     }
+
+#if HAVE_APPINDICATOR
+    private void on_inbox_unread_changed() {
+        update_total_unread_count();
+    }
+
+    private void update_total_unread_count() {
+        int total = 0;
+        foreach (var context in this.accounts.values) {
+            if (context.inbox != null) {
+                total += context.inbox.properties.email_unread;
+            }
+        }
+        this.application.update_unread_count(total);
+    }
+#endif
 
 }
 

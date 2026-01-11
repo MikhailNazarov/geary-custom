@@ -227,6 +227,9 @@ public class Application.Client : Gtk.Application {
     private Components.Inspector? inspector = null;
     private Geary.Nonblocking.Mutex controller_mutex = new Geary.Nonblocking.Mutex();
     private GLib.Notification? error_notification = null;
+#if HAVE_APPINDICATOR
+    private TrayIcon? tray_icon = null;
+#endif
 
 
     /**
@@ -356,6 +359,10 @@ public class Application.Client : Gtk.Application {
         this.config = new Configuration(SCHEMA_ID);
         this.autostart = new StartupManager(this);
 
+#if HAVE_APPINDICATOR
+        this.tray_icon = new TrayIcon(this);
+#endif
+
         // Ensure all geary windows have an icon
         Gtk.Window.set_default_icon_name(Config.APP_ID);
 
@@ -410,6 +417,17 @@ public class Application.Client : Gtk.Application {
         // Finally, start the controller.
         this.create_controller.begin();
     }
+
+#if HAVE_APPINDICATOR
+    /**
+     * Updates the tray icon unread count.
+     */
+    public void update_unread_count(int count) {
+        if (this.tray_icon != null) {
+            this.tray_icon.set_unread_count(count);
+        }
+    }
+#endif
 
     public override int command_line(GLib.ApplicationCommandLine command_line) {
         int exit_value = handle_general_options(command_line);

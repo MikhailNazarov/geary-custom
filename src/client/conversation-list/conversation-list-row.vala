@@ -26,6 +26,7 @@ internal class ConversationList.Row : Gtk.ListBoxRow {
     [GtkChild] unowned Gtk.Label count_badge;
 
     [GtkChild] unowned Gtk.Image flagged_icon;
+    [GtkChild] unowned Hdy.Avatar avatar;
 
     [GtkChild] unowned Gtk.CheckButton selected_button;
 
@@ -71,6 +72,9 @@ internal class ConversationList.Row : Gtk.ListBoxRow {
 
         this.participants.set_markup(get_participants());
 
+        // Set avatar text from first sender
+        update_avatar();
+
         var count = conversation.get_count();
         if (count > 1) {
             this.count_badge.set_text(conversation.get_count().to_string());
@@ -80,6 +84,16 @@ internal class ConversationList.Row : Gtk.ListBoxRow {
 
         update_flags(null);
 
+    }
+
+    private void update_avatar() {
+        Geary.Email? email = conversation.get_latest_recv_email(
+            Geary.App.Conversation.Location.ANYWHERE
+        );
+        if (email != null && email.from != null && email.from.size > 0) {
+            var sender = email.from.get(0);
+            this.avatar.text = sender.to_short_display();
+        }
     }
 
     internal void set_selection_enabled(bool enabled) {

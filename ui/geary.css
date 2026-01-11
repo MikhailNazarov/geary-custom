@@ -64,8 +64,12 @@ row.conversation-list label {
   margin-bottom: .4em;
 }
 
+row.conversation-list avatar {
+  margin-left: 0.5em;
+}
+
 row.conversation-list .details {
-  padding-left: 1em;
+  padding-left: 0.75em;
 }
 
 row.conversation-list .tertiary {
@@ -86,7 +90,17 @@ row.conversation-list .date {
   margin-left: 1em;
 }
 
+/* Participants styling */
+row.conversation-list .participants {
+  font-size: 1.15em;
+  font-weight: 600;
+}
+
 /* Unread styling */
+row.conversation-list.unread {
+  background-color: alpha(@theme_selected_bg_color, 0.12);
+}
+
 row.conversation-list.unread .subject {
   font-weight: bold;
 }

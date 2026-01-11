@@ -31,6 +31,7 @@ client_vala_sources = files(
   'application/application-notification-plugin-context.vala',
   'application/application-plugin-manager.vala',
   'application/application-startup-manager.vala',
+  'application/application-tray-icon.vala',
   'application/goa-mediator.vala',
   'application/secret-mediator.vala',
 
@@ -176,6 +177,12 @@ client_dependencies = [
   webkit2gtk,
 ]
 
+# Optional AppIndicator support
+have_appindicator = appindicator_dep.found()
+if have_appindicator
+  client_dependencies += appindicator_dep
+endif
+
 client_build_dir = meson.current_build_dir()
 
 # Generate internal VAPI for unit testing. See Meson issue
@@ -193,6 +200,10 @@ client_vala_args += [
 
 if webkit2gtk.version().version_compare('<2.31')
   client_vala_args += [ '--define=WEBKIT_PLUGINS_SUPPORTED' ]
+endif
+
+if have_appindicator
+  client_vala_args += [ '--define=HAVE_APPINDICATOR' ]
 endif
 
 # Main client application library
