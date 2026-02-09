@@ -30,8 +30,12 @@ public class Application.TrayIcon : GLib.Object {
             "org.gnome.Geary",
             AppIndicator.IndicatorCategory.COMMUNICATIONS
         );
+        // Set icon theme path so SNI hosts can find icons
+        this.indicator.set_icon_theme_path(
+            "/usr/share/icons/hicolor/scalable/apps"
+        );
         // Use custom icon with red dot for unread
-        this.indicator.set_attention_icon("geary-unread");
+        this.indicator.set_attention_icon_full("geary-unread", "Unread messages");
 
         // Build menu
         this.menu = new Gtk.Menu();
