@@ -27,7 +27,7 @@ public class Application.TrayIcon : GLib.Object {
         // Create indicator - use Geary's own icon
         this.indicator = new AppIndicator.Indicator(
             "geary-mail",
-            "org.gnome.Geary",
+            "geary-mail",
             AppIndicator.IndicatorCategory.COMMUNICATIONS
         );
         // Set icon theme path so SNI hosts can find icons

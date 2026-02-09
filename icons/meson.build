@@ -44,7 +44,11 @@ install_data(
   install_dir: join_paths(data_dir, 'icons', scalable_dir),
 )
 
-# Custom unread icon for tray
+# Custom tray icons
+install_data(
+  join_paths(scalable_dir, 'geary-mail.svg'),
+  install_dir: join_paths(data_dir, 'icons', scalable_dir),
+)
 install_data(
   join_paths(scalable_dir, 'geary-unread.svg'),
   install_dir: join_paths(data_dir, 'icons', scalable_dir),
