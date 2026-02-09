@@ -5,7 +5,6 @@ build/
 *.pkg.tar.zst
 *.pkg.tar.xz
 pkg/
-src/
 
 # Editor files
 *.swp
